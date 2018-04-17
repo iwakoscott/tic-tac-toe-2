@@ -18,7 +18,7 @@ function PlayersSelector(){
       <Link
         to={{
           pathname: '/rock-paper-scissors',
-          search: '?players=1'
+          search: '?players=2'
         }}>
         <h3 className="button">
           Two-player
