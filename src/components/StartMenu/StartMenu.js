@@ -6,20 +6,12 @@ import './StartMenu.css';
 function PlayersSelector(){
   return (
     <div className="mt-5">
-      <Link
-        to={{
-          pathname: '/rock-paper-scissors',
-          search: '?players=1'
-        }}>
+      <Link to='/rock-paper-scissors'>
         <h3 className="button">
           One-player
         </h3>
       </Link>
-      <Link
-        to={{
-          pathname: '/rock-paper-scissors',
-          search: '?players=2'
-        }}>
+      <Link to='/tic-tac-toe'>
         <h3 className="button">
           Two-player
         </h3>
