@@ -6,11 +6,23 @@ import './StartMenu.css';
 function PlayersSelector(){
   return (
     <div className="mt-5">
-      <Link to='/rock-paper-scissors?players=1'>
-        <h3 className="button">One-player</h3>
+      <Link
+        to={{
+          pathname: '/rock-paper-scissors',
+          search: '?players=1'
+        }}>
+        <h3 className="button">
+          One-player
+        </h3>
       </Link>
-      <Link to='/rock-paper-scissors?players=2'>
-        <h3 className="button">Two-player</h3>
+      <Link
+        to={{
+          pathname: '/rock-paper-scissors',
+          search: '?players=1'
+        }}>
+        <h3 className="button">
+          Two-player
+        </h3>
       </Link>
     </div>
   );
@@ -34,8 +46,9 @@ export default class StartMenu extends Component {
           ? <PlayersSelector />
           : <h2
               className="mt-5 button"
-              onClick={this.handleClick}
-              >Start</h2>}
+              onClick={this.handleClick}>
+              Start
+            </h2>}
       </div>
     );
   } // render
