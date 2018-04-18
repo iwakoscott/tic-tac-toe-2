@@ -64,10 +64,13 @@ export default class RockPaperScissors extends Component {
 
   componentDidMount(){
 
+    // What is this nasty chain of setState? This is to generate the computer dialogue.
     setTimeout(() => this.setState(() => ({
       computersMessage: 'Best two out of three!',
+    }), () => setTimeout(() => this.setState(() => ({
+      computersMessage: '',
       startGame: true
-    })), 3000);
+    })), 2000)), 2000);
 
   } // componentDidMount
 
@@ -88,6 +91,9 @@ export default class RockPaperScissors extends Component {
               <div
                 style={{width: "20rem"}}
                 className="card d-flex justify-content-center align-items-center p-5">
+                <div className="card-title">
+                  <h3>Computer's Move:</h3>
+                </div>
                 <h3 className="display-2">{!initiated || move === null ? `?` : getRPSIcon(move)}</h3>
               </div>
             )}
