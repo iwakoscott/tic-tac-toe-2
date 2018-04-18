@@ -17,12 +17,13 @@ function getRPSIcon(move){
   }
 } // getRPSIcon
 
-function MoveSelector({ handleMoveSelection }){
+function MoveSelector({ handleMoveSelection, disabled }){
   const moves = [0, 1, 2];
   return (
     <div className="btn-group">
       {moves.map(move =>
         <button
+          disabled={disabled}
           onClick={() => handleMoveSelection(move)}
           key={move}
           className="btn btn-outline-dark btn-lg">
@@ -55,20 +56,30 @@ export default class RockPaperScissors extends Component {
   state = {
     initiated: false,
     myMove: null,
-  }
+    computersMessage: `Who will get 'X'?`,
+    startGame: false,
+  } // state
 
   handleMoveSelection = myMove => this.setState(() => ({ myMove, initiated: true }));
 
+  componentDidMount(){
+
+    setTimeout(() => this.setState(() => ({
+      computersMessage: 'Best two out of three!',
+      startGame: true
+    })), 3000);
+
+  } // componentDidMount
+
   render(){
-    const { initiated } = this.state;
+    const { initiated, computersMessage, startGame } = this.state;
 
     return (
       <div
         style={{height: "100vh"}}
         className="container d-flex flex-column justify-content-center align-items-center">
         <h2 className="text-center mb-5 display-4">Rock Paper Scissors</h2>
-        <h2 className="text-center mb-5 display-5">{`Who will get 'X'?`}</h2>
-
+        <h2 className="text-center mb-5 display-5">{computersMessage}</h2>
 
         {/* Computer's Move Card */}
         <div>
@@ -85,7 +96,9 @@ export default class RockPaperScissors extends Component {
 
         {/* My Moves Selectors */}
         <div className="d-flex justify-content-center align-items-center mt-5">
-          <MoveSelector handleMoveSelection={this.handleMoveSelection} />
+          <MoveSelector
+            handleMoveSelection={this.handleMoveSelection}
+            disabled={!startGame}/>
         </div>
 
       </div>
