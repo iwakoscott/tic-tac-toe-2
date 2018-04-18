@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { parse } from 'query-string';
 
 function getRPSIcon(move){
-  // ==== Computer Move Schema ====
+  // ==== RPS Move Schema ====
   // 0 => Rock
   // 1 => Paper
   // 2 => Scissors
@@ -17,6 +16,21 @@ function getRPSIcon(move){
       return null;
   }
 } // getRPSIcon
+
+function MoveSelector({ handleMoveSelection }){
+  const moves = [0, 1, 2];
+  return (
+    <div className="btn-group">
+      {moves.map(move =>
+        <button
+          onClick={() => handleMoveSelection(move)}
+          key={move}
+          className="btn btn-outline-dark btn-lg">
+          {getRPSIcon(move)}
+        </button>)}
+    </div>
+  );
+} // MoveSelector
 
 
 class ComputerMove extends Component {
@@ -39,27 +53,40 @@ class ComputerMove extends Component {
 export default class RockPaperScissors extends Component {
 
   state = {
-    initiated: true,
+    initiated: false,
+    myMove: null,
   }
+
+  handleMoveSelection = myMove => this.setState(() => ({ myMove, initiated: true }));
 
   render(){
     const { initiated } = this.state;
 
     return (
-      <div className="container">
-        <h2 className="text-center">Rock Paper Scissors</h2>
-        <ComputerMove>
-          {move => (
-            <div className="row">
-              <div className="col-sm-4 offset-sm-4">
-                <div
-                  className="card d-flex flex-column justify-content-center align-items-center p-5">
-                  <h3 className="display-2">{!initiated || move === null ? `?` : getRPSIcon(move)}</h3>
-                </div>
+      <div
+        style={{height: "100vh"}}
+        className="container d-flex flex-column justify-content-center align-items-center">
+        <h2 className="text-center mb-5 display-4">Rock Paper Scissors</h2>
+        <h2 className="text-center mb-5 display-5">{`Who will get 'X'?`}</h2>
+
+
+        {/* Computer's Move Card */}
+        <div>
+          <ComputerMove>
+            {move => (
+              <div
+                style={{width: "20rem"}}
+                className="card d-flex justify-content-center align-items-center p-5">
+                <h3 className="display-2">{!initiated || move === null ? `?` : getRPSIcon(move)}</h3>
               </div>
-            </div>
-          )}
-        </ComputerMove>
+            )}
+          </ComputerMove>
+        </div>
+
+        {/* My Moves Selectors */}
+        <div className="d-flex justify-content-center align-items-center mt-5">
+          <MoveSelector handleMoveSelection={this.handleMoveSelection} />
+        </div>
 
       </div>
     );
