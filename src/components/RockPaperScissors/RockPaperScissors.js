@@ -1,21 +1,39 @@
 import React, { Component } from 'react';
 
-function getRPSIcon(move){
+function RPSIcon({ move }){
   // ==== RPS Move Schema ====
   // 0 => Rock
   // 1 => Paper
   // 2 => Scissors
+  let classNames = "far";
+
   switch(move){
     case 0:
-      return <i className="far fa-hand-rock"></i>;
+      classNames += " fa-hand-rock";
+      break;
     case 1:
-      return <i className="far fa-hand-paper"></i>;
+      classNames += " fa-hand-paper";
+      break;
     case 2:
-      return <i className="far fa-hand-scissors"></i>;
+      classNames += " fa-hand-scissors";
+      break;
     default:
-      return <i className="far fa-question-circle"></i>;
+      classNames += " fa-question-circle";
+      break;
   }
-} // getRPSIcon
+
+  return <i className={classNames}></i>;
+} // RPSIcon
+
+function ScoreBoard({ me, computer, moveCount }){
+  return (
+    <div className="d-flex justify-content-center align-items-center">
+      <div>{`You: ${me}`}</div>
+      <div className="ml-2">{`Computer: ${computer}`}</div>
+      <div className="ml-2">{`Round: ${moveCount}`}</div>
+    </div>
+  );
+} // ScoreBoard
 
 function MoveSelector({ handleMoveSelection, disabled }){
   const moves = [0, 1, 2];
@@ -27,7 +45,7 @@ function MoveSelector({ handleMoveSelection, disabled }){
           onClick={() => handleMoveSelection(move)}
           key={move}
           className="btn btn-outline-dark btn-lg">
-          {getRPSIcon(move)}
+          <RPSIcon move={move}/>
         </button>)}
     </div>
   );
@@ -38,17 +56,26 @@ class ComputerMove extends Component {
 
   state = {
     move: null,
-    startGame: true,
-    initiated: false,
   } // state
 
   static getDerivedStateFromProps(nextProps, prevState){
-    const move = Math.floor(Math.random()*3);
+
     const { startGame, initiated } = nextProps;
-  
-    return startGame === prevState.startGame
-      ? {...prevState}
-      : { move, startGame, initiated }
+
+    if (!startGame && !initiated){
+      return {
+        move: null
+      }
+    }
+
+    if (startGame && initiated){
+      const move = Math.floor(Math.random()*3);
+      return { move };
+    }
+
+    return {
+      ...prevState
+    }
 
   } // getDerivedStateFromProps
 
@@ -57,8 +84,7 @@ class ComputerMove extends Component {
   } // componentDidUpdate
 
   render(){
-    const { move, initiated } = this.state;
-    return this.props.children(initiated ? move : null);
+    return this.props.children(this.state.move);
   } // render
 
 } // ComputerMove
@@ -68,7 +94,7 @@ export default class RockPaperScissors extends Component {
   state = {
     me: 0,
     computer: 0,
-    message: `Who will get 'X'? Best two out of three!`,
+    message: `Who will get 'X'? Best of two!`,
     startGame: false,
     moveCount: 0,
     initiated: false,
@@ -96,11 +122,18 @@ export default class RockPaperScissors extends Component {
 
   } // tallyWinner
 
+  componentDidUpdate(){
+    // for every update we will check to see if a player won then route to actual tic-tac-toe game
+    const { me, computer } = this.state;
+    if (me === 2 || computer === 2){
+      alert(me === 2 ? 'You won!' : 'You lost :(');
+    }
+  } // componentDidUpdate
+
   handleMoveSelection = myMove => {
 
-    // 1. let application know user initiated a move
+    // 1. Let application know there was a initiated move
     this.setState({initiated: true}, () => {
-
       // 2. check to see if there is a winner or a tie
       const winner = this.tallyWinner(myMove, this.computersMove);
 
@@ -109,7 +142,10 @@ export default class RockPaperScissors extends Component {
           moveCount: moveCount + 1,
           message: "Tie!",
           startGame: false
-        }));
+        }), () => setTimeout(() => this.setState({
+          initiated: false,
+          message: ''
+        }, () => this.setState({startGame: true})), 2000));
       } // if tie increment moveCount and return
 
       this.setState(({ moveCount }) => ({
@@ -117,8 +153,10 @@ export default class RockPaperScissors extends Component {
         message: `${ winner === 'me' ? 'You' : 'Computer' } win${ winner === 'computer' ? 's' : ''}!`,
         startGame: false,
         moveCount: moveCount + 1
-      }), () => setTimeout(() => this.setState({ startGame: true, initiated: false }), 2000));
-
+      }), () => setTimeout(() => this.setState({
+        initiated: false,
+        message: ''
+      }, () => this.setState({startGame: true})), 2000));
     });
 
   } // handleMoveSelection
@@ -133,17 +171,24 @@ export default class RockPaperScissors extends Component {
   } // componentDidMount
 
   render(){
-    const { initiated, message, startGame } = this.state;
+    const { initiated, message, startGame, me, computer, moveCount } = this.state;
     return (
       <div
         style={{height: "100vh"}}
         className="container d-flex flex-column justify-content-center align-items-center">
         <h2 className="text-center mb-3">Rock Paper Scissors</h2>
+        <ScoreBoard
+          moveCount={moveCount}
+          me={me}
+          computer={computer}/>
         <h2 className="text-center">{message}</h2>
 
         {/* Computer's Move Card */}
         <div>
-          <ComputerMove getComputersMove={this.getComputersMove} startGame={startGame} initiated={initiated}>
+          <ComputerMove
+            getComputersMove={this.getComputersMove}
+            startGame={startGame}
+            initiated={initiated}>
             {move => (
               <div
                 style={{width: "20rem"}}
@@ -151,7 +196,9 @@ export default class RockPaperScissors extends Component {
                 <div className="card-title">
                   <h3>Computer's Move:</h3>
                 </div>
-                <h3 className="display-2">{getRPSIcon(move)}</h3>
+                <h3 className="display-2">
+                  <RPSIcon move={move}/>
+                </h3>
               </div>
             )}
           </ComputerMove>
