@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+let timeouts = [];
+
 function RPSIcon({ move }){
   // ==== RPS Move Schema ====
   // 0 => Rock
@@ -126,7 +128,9 @@ export default class RockPaperScissors extends Component {
     // for every update we will check to see if a player won then route to actual tic-tac-toe game
     const { me, computer } = this.state;
     if (me === 2 || computer === 2){
-      alert(me === 2 ? 'You won!' : 'You lost :(');
+      if (window.confirm(me === 2 ? 'You won!' : 'You lost! :(')){
+         this.props.history.push(`/rock-paper-scissors&me=${me === 2? 'x' : 'o'}`)
+      }
     }
   } // componentDidUpdate
 
@@ -142,10 +146,12 @@ export default class RockPaperScissors extends Component {
           moveCount: moveCount + 1,
           message: "Tie!",
           startGame: false
-        }), () => setTimeout(() => this.setState({
-          initiated: false,
-          message: ''
-        }, () => this.setState({startGame: true})), 2000));
+        }), () => timeouts.push(
+          setTimeout(() => this.setState({
+            initiated: false,
+            message: ''
+          }, () => this.setState({startGame: true})), 1500)
+        ));
       } // if tie increment moveCount and return
 
       this.setState(({ moveCount }) => ({
@@ -153,20 +159,26 @@ export default class RockPaperScissors extends Component {
         message: `${ winner === 'me' ? 'You' : 'Computer' } win${ winner === 'computer' ? 's' : ''}!`,
         startGame: false,
         moveCount: moveCount + 1
-      }), () => setTimeout(() => this.setState({
-        initiated: false,
-        message: ''
-      }, () => this.setState({startGame: true})), 2000));
+      }), () => timeouts.push(
+        setTimeout(() => this.setState({
+          initiated: false,
+          message: ''
+        }, () => this.setState({startGame: true})), 1500)
+      ));
     });
 
   } // handleMoveSelection
 
   getComputersMove = computersMove => this.computersMove = computersMove;
 
+  componentWillUnmount(){
+    timeouts.forEach(timeout => clearTimeout(timeout));
+  } // componentWillUnmount
+
   componentDidMount(){
 
     // This is to generate the computer dialogue before the match.
-    setTimeout(() => this.setState({message: '', startGame: true}), 200);
+    timeouts.push(setTimeout(() => this.setState({message: '', startGame: true}), 200));
 
   } // componentDidMount
 
