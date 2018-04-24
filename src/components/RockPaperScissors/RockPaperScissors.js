@@ -124,7 +124,7 @@ export default class RockPaperScissors extends Component {
 
   } // tallyWinner
 
-  componentDidUpdate(){
+  componentDidUpdate(prevState){
     // for every update we will check to see if a player won then route to actual tic-tac-toe game
     const { me, computer } = this.state;
     if (me === 2 || computer === 2){
