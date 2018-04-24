@@ -129,7 +129,7 @@ export default class RockPaperScissors extends Component {
     const { me, computer } = this.state;
     if (me === 2 || computer === 2){
       if (window.confirm(me === 2 ? 'You won!' : 'You lost! :(')){
-         this.props.history.push(`/rock-paper-scissors&me=${me === 2? 'x' : 'o'}`)
+         timeouts.push(setTimeout(() => this.props.history.push(`/rock-paper-scissors&me=${me === 2? 'x' : 'o'}`), 1500));
       }
     }
   } // componentDidUpdate
@@ -178,7 +178,7 @@ export default class RockPaperScissors extends Component {
   componentDidMount(){
 
     // This is to generate the computer dialogue before the match.
-    timeouts.push(setTimeout(() => this.setState({message: '', startGame: true}), 200));
+    timeouts.push(setTimeout(() => this.setState({message: '', startGame: true}), 2000));
 
   } // componentDidMount
 
